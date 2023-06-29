@@ -1,0 +1,158 @@
+1.procedure using cursor
+
+CREATE OR REPLACE PROCEDURE pro_1 (
+    a IN VARCHAR2,
+    b OUT VARCHAR2,
+    c OUT VARCHAR2
+) AS
+    cursor c2 (d VARCHAR2) is select count(V_EMPNO) em, SUM(V_SAL) fm from rough1 where v_job =d;
+begin
+    for i in c2(a)
+loop
+    b := i.em;
+    c := i.fm;
+end loop;
+END pro_1;
+/
+    
+SET SERVEROUTPUT ON;
+DECLARE
+    x VARCHAR2(250);
+    y VARCHAR2(250);
+BEGIN
+    pro_1('ST_MAN', x, y);
+    DBMS_OUTPUT.PUT_LINE(x);
+    DBMS_OUTPUT.PUT_LINE(y);
+END;
+/
+
+2.create procedure 
+
+CREATE OR REPLACE PROCEDURE pro_1 (
+    a IN VARCHAR2,
+    b OUT VARCHAR2,
+    c OUT VARCHAR2
+) AS
+BEGIN
+    SELECT COUNT(V_EMPNO), SUM(V_SAL)
+    INTO b, c
+    FROM rough1
+    WHERE V_JOB = a;
+    --GROUP BY V_JOB;
+
+ 
+
+    --DBMS_OUTPUT.PUT_LINE(a);
+   -- DBMS_OUTPUT.PUT_LINE(b);
+    --DBMS_OUTPUT.PUT_LINE(c);
+END pro_1;
+/
+
+ 
+
+SET SERVEROUTPUT ON;
+DECLARE
+    x VARCHAR2(250);
+    y VARCHAR2(250);
+BEGIN
+    pro_1('IT_PROG', x, y);
+    DBMS_OUTPUT.PUT_LINE(x);
+    DBMS_OUTPUT.PUT_LINE(y);
+END;
+/
+
+3.create the function
+CREATE or replace FUNCTION fu_kc(lower_limit number, upper_limit number)
+RETURN number
+          IS
+           n_emp number;
+          BEGIN
+             select count(v_empno) into n_emp from rough1 where v_sal between lower_limit and upper_limit;
+             return n_emp;
+          END fu_kc;
+          /
+
+
+---------------Execution
+
+declare
+a number;
+b number;
+c number;
+begin
+a:=5000;
+b:=10000;
+c:=fu_kc(a,b);
+dbms_output.put_line(c);
+end;
+
+4:create cursor
+[15:00] Satish Mallagundla
+
+set serveroutput on;
+
+declare
+
+    f_name varchar2(30);
+
+    l_name varchar2(40);
+
+    sal number(9);
+
+    total_rows number;
+
+    cursor cr_r is 
+
+    select first_name, last_name, salary from emp_ where employee_id < 110;
+
+Begin
+
+    open cr_r;
+
+    if not(cr_r%isopen) then
+
+        open cr_r;
+
+    end if;
+
+    loop
+
+        fetch cr_r into f_name,l_name, sal;
+
+        dbms_output.put_line('First_name:' || ' ' || f_name || ', ' ||'last_name:' || ' ' || l_name || ', ' || 'salary :' || sal);
+
+        exit when cr_r%notfound;
+
+    end loop;
+
+    total_rows := cr_r%rowcount;
+
+    dbms_output.put_line('total rows:' || total_rows);   
+
+close cr_r;
+
+end;
+
+[15:01] Satish Mallagundla
+
+cursor cs1 is select first_name,salary, email from emp_ where employee_id <= 110;
+
+begin
+
+for i in cs1
+
+loop
+
+    v_name := i.first_name;
+
+    v_salary := i.salary;
+
+    v_email := i.email;
+
+    dbms_output.put_line(v_name);
+
+   dbms_output.put_line(v_salary);
+
+   dbms_output.put_line(v_email);
+
+end loop;
